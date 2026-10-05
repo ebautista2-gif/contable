@@ -1,5 +1,5 @@
-import { Mail, MapPin, MessageCircle, Phone, UserRound } from 'lucide-react'
-import { EMPRESA } from '@/lib/empresa'
+import { Mail, MapPin, MessageCircle, Navigation, Phone, UserRound } from 'lucide-react'
+import { EMPRESA, MAPA } from '@/lib/empresa'
 import { Logo } from './encabezado'
 import { FormularioCotizacion } from './formulario-cotizacion'
 
@@ -49,7 +49,44 @@ export function Contacto() {
         </div>
         <FormularioCotizacion />
       </div>
+      <Ubicacion />
     </section>
+  )
+}
+
+export function Ubicacion() {
+  return (
+    <div className="mx-auto mt-10 max-w-6xl">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm font-medium text-primary">Nuestra oficina</p>
+          <h2 className="mt-1 font-serif text-3xl tracking-tight md:text-4xl">Encuéntranos en San Gil</h2>
+          <p className="mt-2 flex items-center gap-2 text-muted-foreground">
+            <MapPin className="size-4 text-primary" aria-hidden="true" />
+            {EMPRESA.direccion}
+          </p>
+        </div>
+        <a
+          href={MAPA.enlace}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex w-fit items-center gap-2 rounded-lg border bg-card px-4 py-2.5 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
+        >
+          <Navigation className="size-4" aria-hidden="true" />
+          Cómo llegar con Google Maps
+        </a>
+      </div>
+      <div className="mt-6 overflow-hidden rounded-2xl border shadow-sm">
+        <iframe
+          src={MAPA.embed}
+          title={`Mapa de ubicación de ${EMPRESA.nombre}: ${EMPRESA.direccion}`}
+          className="block h-80 w-full md:h-[420px]"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          allowFullScreen
+        />
+      </div>
+    </div>
   )
 }
 
