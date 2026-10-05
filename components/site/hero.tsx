@@ -51,7 +51,7 @@ export function Hero() {
               variant="outline"
               className="h-11 border-background/30 bg-transparent px-5 text-background hover:bg-background/10 hover:text-background"
               nativeButton={false}
-              render={<a href="#calculadoras" />}
+              render={<a href="/calculadoras" />}
             >
               Probar calculadoras
               <ArrowRight data-icon="inline-end" aria-hidden="true" />

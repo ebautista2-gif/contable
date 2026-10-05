@@ -1,6 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Inter, Newsreader } from 'next/font/google'
+import { BotonWhatsApp, PiePagina } from '@/components/site/contacto'
+import { Encabezado } from '@/components/site/encabezado'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -34,7 +36,10 @@ export default function RootLayout({
   return (
     <html lang="es-CO" className={`${inter.variable} ${newsreader.variable}`}>
       <body className="antialiased">
-        {children}
+        <Encabezado />
+        <main>{children}</main>
+        <PiePagina />
+        <BotonWhatsApp />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

@@ -1,17 +1,21 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Landmark } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { EMPRESA } from '@/lib/empresa'
+import { cn } from '@/lib/utils'
 
-const enlaces = [
-  { href: '#inicio', label: 'Inicio' },
-  { href: '#quienes-somos', label: 'Quiénes Somos' },
-  { href: '#servicios', label: 'Servicios' },
-  { href: '#calculadoras', label: 'Calculadoras' },
-  { href: '#software', label: 'Software' },
-  { href: '#seguridad-social', label: 'Seguridad Social' },
-  { href: '#contacto', label: 'Contacto' },
-]
+export const PESTANAS = [
+  { href: '/', label: 'Inicio' },
+  { href: '/quienes-somos', label: 'Quiénes Somos' },
+  { href: '/servicios', label: 'Servicios' },
+  { href: '/calculadoras', label: 'Calculadoras' },
+  { href: '/software', label: 'Software' },
+  { href: '/seguridad-social', label: 'Seguridad Social' },
+  { href: '/contacto', label: 'Contacto' },
+] as const
 
 export function Logo({ claro = false }: { claro?: boolean }) {
   return (
@@ -31,36 +35,45 @@ export function Logo({ claro = false }: { claro?: boolean }) {
   )
 }
 
+function Pestanas({ className }: { className?: string }) {
+  const ruta = usePathname()
+  return (
+    <ul className={className}>
+      {PESTANAS.map((p) => {
+        const activa = p.href === '/' ? ruta === '/' : ruta.startsWith(p.href)
+        return (
+          <li key={p.href}>
+            <Link
+              href={p.href}
+              aria-current={activa ? 'page' : undefined}
+              className={cn(
+                'inline-flex border-b-2 py-1 transition-colors hover:text-foreground',
+                activa ? 'border-accent font-medium text-foreground' : 'border-transparent',
+              )}
+            >
+              {p.label}
+            </Link>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 export function Encabezado() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 md:px-6">
         <Logo />
         <nav aria-label="Principal" className="hidden lg:block">
-          <ul className="flex items-center gap-5 text-sm text-muted-foreground">
-            {enlaces.map((e) => (
-              <li key={e.href}>
-                <a href={e.href} className="transition-colors hover:text-foreground">
-                  {e.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <Pestanas className="flex items-center gap-5 text-sm text-muted-foreground" />
         </nav>
         <Button nativeButton={false} render={<a href={EMPRESA.whatsapp} target="_blank" rel="noopener noreferrer" />}>
           Solicitar asesoría
         </Button>
       </div>
       <nav aria-label="Secciones" className="border-t lg:hidden">
-        <ul className="mx-auto flex max-w-6xl gap-5 overflow-x-auto px-4 py-2.5 text-sm whitespace-nowrap text-muted-foreground md:px-6">
-          {enlaces.map((e) => (
-            <li key={e.href}>
-              <a href={e.href} className="transition-colors hover:text-foreground">
-                {e.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <Pestanas className="mx-auto flex max-w-6xl gap-5 overflow-x-auto px-4 py-1.5 text-sm whitespace-nowrap text-muted-foreground md:px-6" />
       </nav>
     </header>
   )
