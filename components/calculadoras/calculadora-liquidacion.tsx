@@ -22,6 +22,7 @@ export function CalculadoraLiquidacion() {
   const [tipoContrato, setTipoContrato] = useState<TipoContrato>('indefinido')
   const [motivo, setMotivo] = useState<MotivoRetiro>('renuncia')
   const [fechaFinContrato, setFechaFinContrato] = useState('2026-12-31')
+  const [primaJunio, setPrimaJunio] = useState<'si' | 'no'>('si')
 
   const resultado = calcularLiquidacion({
     salario,
@@ -31,7 +32,11 @@ export function CalculadoraLiquidacion() {
     tipoContrato,
     motivo,
     fechaFinContrato,
+    primaJunioPagada: primaJunio === 'si',
   })
+
+  const mesRetiro = Number(fechaRetiro.split('-')[1] || 0)
+  const retiroSegundoSemestre = mesRetiro > 6
 
   const conAuxilio = aplicaAuxilioTransporte(salario)
 
@@ -82,6 +87,25 @@ export function CalculadoraLiquidacion() {
             value={diasDisfrutados}
             onChange={(e) => setDiasDisfrutados(Math.max(0, Number(e.target.value)))}
           />
+        </div>
+        <div className="flex flex-col gap-2">
+          <CampoSelect
+            id="liq-prima-junio"
+            label="¿Recibió la prima de mitad de año (junio)?"
+            valor={retiroSegundoSemestre ? primaJunio : 'si'}
+            onChange={(v) => setPrimaJunio(v as 'si' | 'no')}
+            opciones={[
+              { value: 'si', label: 'Sí, ya la recibí' },
+              { value: 'no', label: 'No, está pendiente' },
+            ]}
+          />
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {retiroSegundoSemestre
+              ? primaJunio === 'no'
+                ? 'Se suma la prima del primer semestre (enero a junio) a la liquidación.'
+                : 'Solo se liquida la prima proporcional del segundo semestre.'
+              : 'Como el retiro es antes del 30 de junio, la prima de mitad de año ya se liquida de forma proporcional.'}
+          </p>
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <CampoSelect
@@ -135,8 +159,7 @@ export function CalculadoraLiquidacion() {
               etiquetaTotal="Total a pagar"
             />
             <p className="text-xs leading-relaxed text-muted-foreground">
-              Supone que las cesantías de años anteriores ya fueron consignadas al fondo y que la prima del semestre anterior
-              fue pagada. No incluye salarios pendientes ni descuentos autorizados.
+              Supone que las cesantías de años anteriores ya fueron consignadas al fondo. No incluye salarios pendientes ni descuentos autorizados.
             </p>
           </>
         ) : (

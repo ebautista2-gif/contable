@@ -61,6 +61,7 @@ export type DatosLiquidacion = {
   tipoContrato: TipoContrato
   motivo: MotivoRetiro
   fechaFinContrato?: string
+  primaJunioPagada?: boolean
 }
 
 export type Concepto = {
@@ -107,6 +108,20 @@ export function calcularLiquidacion(datos: DatosLiquidacion): ResultadoLiquidaci
   const diasPrima = dias360(maxFecha(ingreso, inicioSemestre), retiro)
   const prima = (base * diasPrima) / 360
 
+  function primaPrimerSemestrePendiente(): Concepto[] {
+    if (retiro.m <= 6 || datos.primaJunioPagada !== false) return []
+    const finJunio: FechaPartes = { y: retiro.y, m: 6, d: 30 }
+    if (compararFechas(ingreso!, finJunio) > 0) return []
+    const dias = dias360(maxFecha(ingreso!, { y: retiro.y, m: 1, d: 1 }), finJunio)
+    return [
+      {
+        concepto: 'Prima de mitad de año pendiente',
+        detalle: `${dias} días del primer semestre de ${retiro.y} no pagados · (salario + auxilio) × días ÷ 360`,
+        valor: (base * dias) / 360,
+      },
+    ]
+  }
+
   const diasVacacionesCausados = (diasTotales * 15) / 360
   const diasVacacionesPendientes = Math.max(
     0,
@@ -130,6 +145,7 @@ export function calcularLiquidacion(datos: DatosLiquidacion): ResultadoLiquidaci
       detalle: `${diasPrima} días del semestre · (salario + auxilio) × días ÷ 360`,
       valor: prima,
     },
+    ...primaPrimerSemestrePendiente(),
     {
       concepto: 'Vacaciones',
       detalle: `${diasVacacionesPendientes.toFixed(2)} días pendientes · salario ÷ 30 × días`,
